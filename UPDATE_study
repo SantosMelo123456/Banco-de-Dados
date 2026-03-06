@@ -1,0 +1,19 @@
+4. UPDATE : é usado para modificar registros existentes. Ou seja, atualizar os dados.
+
+-- Sintaxe básica
+UPDATE tabela SET coluna1 = valor1 WHERE condição;
+
+-- Atualizar o email de um cliente
+UPDATE clientes 
+SET email = 'novoemail@email.com' 
+WHERE id = 1;
+
+-- Atualizar vários campos ao mesmo tempo
+UPDATE produtos 
+SET preco = 99.90, estoque = 45
+WHERE nome = 'Ração Premium 10kg';
+
+-- Atualizar com base em cálculo
+UPDATE produtos 
+SET preco = preco * 1.10   -- aumenta 10% no preço
+WHERE categoria = 'racao';
