@@ -1,0 +1,31 @@
+Escrever queries (SELECT, INSERT, UPDATE, DELETE)
+- - - - - - - - - - - - - - - - - - - - - - - - - 
+Essas são as quatro operações essenciais (CRUD).
+
+1. SELECT : usado para buscar/ler dados de uma tabela
+ exemplos:
+
+-- Sintaxe básica
+SELECT coluna1, coluna2 FROM tabela;
+
+-- Buscar TODO/TUDO os clientes
+SELECT * FROM clientes;
+
+-- Buscar apenas nome e email dos CLIENTES (tabela)
+SELECT nome, email FROM clientes;
+
+-- Com filtro (WHERE)
+SELECT * FROM clientes WHERE cidade = 'São Paulo';
+
+-- Com ordenação
+SELECT * FROM pets ORDER BY nome ASC;   - - Sendo ASC: do menor para o maior, de a-z, id ASC (do 1° ao último id). Send DESC: o oposto, decrescente.
+
+-- Com limite de resultados
+SELECT * FROM produtos LIMIT 10;
+
+-- Combinando tudo
+SELECT nome, preco 
+FROM produtos 
+WHERE preco > 50.00 
+ORDER BY preco DESC 
+LIMIT 5;
