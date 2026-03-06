@@ -1,0 +1,58 @@
+Joins, subqueries, CTEs, window functions 
+- - - - - - - - - - - - - - - - - - - - -  -
+Em duas tabelas pequenas por exemplo: uma tabela clientes e uma pedidos, 
+onde nem todos os clientes têm pedidos e nem todos os pedidos têm clientes válidos. Isso reforça a pensar nos casos de borda.
+
+INNER JOIN ou JOIN: ele retorna apenas as linhas que têm correspondência nas duas tabelas.
+left JOIN : que mantém todas as linhas da tabela da esquerda, preenchendo com NULL onde não há correspondência
+rihgt JOIN : é o espelho do left
+full outer JOIN : mantém todos os dados dos dois lados.
+
+exemplo:
+USE joins;
+SELECT * FROM clientes;
+SELECT * FROM pedidos;
+
+- - joins na ordem:
+
+SELECT * FROM clientes
+INNER JOIN pedidos ON clientes.id = pedidos.clientes_id;
+
+SELECT * FROM clientes
+LEFT JOIN pedidos ON clientes.id = pedidos.clientes_id;
+
+SELECT * FROM clientes
+RIGHT JOIN pedidos ON clientes.id = pedidos.clientes_id;
+
+Lógica da escrita do INNER JOIN códigos é que: ele quer retornar apenas as linhas de cliente id que têm correspodência na tabela pedidos. 
+Ou seja, ele só retorna quando verifica se existe clientes_id igual com a tabela pedidos. Só mostra quando existe nas duas
+
+Lógica da escrita do LEFT JOIN códigos é que: ele quer retornar todos os clientes, mesmo que não tenham pedido. Se não tiver aparecendo pedido, preenche o espaço com null.
+Ou seja, ele retorna todos os clientes e os pedidos correspondentes. Se o cliente não tiver pedido, os campos da tabela pedidos aparecem NULL.
+
+Lógica da escrita do RIGHT JOIN códigos é que: ele quer retornar todos os dados da tabela Direita - pedidos -  e trazer os correspondentes da tabela Esquerda - clientes.
+Ou seja, todos os registros da tabela pedidos e os correspondentes da tabela clientes.
+
+LEMBRAR:
+LEFT - tudo da esquerda + correspondentes da direita
+RIGHT - tudo da direita + correspondente da esquerda
+clientes - esquerda
+pedidos - direita
+
+Regra mental muito útil
+JOIN	Regra
+LEFT JOIN	mantém tudo da tabela da esquerda
+RIGHT JOIN	mantém tudo da tabela da direita
+INNER JOIN	mantém apenas correspondências
+
+Quase todo mundo evita RIGHT JOIN e escreve assim:
+
+SELECT * FROM pedidos
+LEFT JOIN clientes ON clientes.id = pedidos.clientes_id;
+
+Traduzindo cada linha:
+SELECT * - selecione tudo
+FROM clientes - da tabela clientes
+LEFT JOIN pedidos - faça uma junção à esquerda (clientes) com a tabela pedidos (pegue todos os registros de clientes e veja se eles têm Pedidos correspondentes)
+ON clientes.id = pedidos.clientes_id; - onde o id do cliente é igual ao clientes_id da tabela pedidos
+
