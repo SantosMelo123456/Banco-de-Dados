@@ -1,0 +1,20 @@
+2. USO DO WHERE :
+
+-- Igual, diferente
+WHERE status = 'ativo'
+WHERE status != 'inativo'
+
+-- Maior, menor
+WHERE preco > 100
+WHERE preco BETWEEN 50 AND 200
+
+-- Texto contém
+WHERE nome LIKE '%bulldog%'   -- contém "bulldog"
+WHERE nome LIKE 'Rex%'        -- começa com "Rex"
+
+-- Lista de valores
+WHERE especie IN ('cachorro', 'gato', 'peixe')
+
+-- Valor nulo
+WHERE email IS NULL
+WHERE email IS NOT NULL
