@@ -1,0 +1,16 @@
+5. DELET - é usado para remover registros. Ou seja, deletar dados.
+
+-- Sintaxe básica
+DELETE FROM tabelaX WHERE condiçãoX;
+
+-- Deletar um cliente específico
+DELETE FROM clientes WHERE id = 10;
+
+-- Deletar pets de uma espécie
+DELETE FROM pets WHERE especie = 'peixe';
+
+-- Deletar produtos sem estoque
+DELETE FROM produtos WHERE estoque = 0;
+
+6. resumo de todas as 4 CRUDS:
+
