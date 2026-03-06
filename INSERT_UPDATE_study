@@ -1,0 +1,43 @@
+Escrever queries ( INSERT, UPDATE, DELETE)
+- - - - - - - - - - - - - - - - - - - - - - - - - - 
+3. INSERT - é usado para adicionar novos registros:
+
+-- Sintaxe básica
+INSERT INTO tabela (coluna1, coluna2) VALUES (valor1, valor2);
+
+-- Inserir um novo cliente
+INSERT INTO clientes (nome, email, telefone, cidade)
+VALUES ('João Silva', 'joao@email.com', '11999999999', 'São Paulo');
+
+-- Inserir um pet
+INSERT INTO pets (nome, especie, raca, id_cliente)
+VALUES ('Rex', 'cachorro', 'Labrador', 1);
+
+-- Inserir vários registros de uma vez
+INSERT INTO produtos (nome, preco, estoque)
+VALUES 
+  ('Ração Premium 10kg', 89.90, 50),
+  ('Coleira M', 25.00, 100),
+  ('Shampoo Pet', 18.50, 75);
+
+4. UPDATE : é usado para modificar registros existentes. Ou seja, atualizar os dados.
+
+-- Sintaxe básica
+UPDATE tabela SET coluna1 = valor1 WHERE condição;
+
+-- Atualizar o email de um cliente
+UPDATE clientes 
+SET email = 'novoemail@email.com' 
+WHERE id = 1;
+
+-- Atualizar vários campos ao mesmo tempo
+UPDATE produtos 
+SET preco = 99.90, estoque = 45
+WHERE nome = 'Ração Premium 10kg';
+
+-- Atualizar com base em cálculo
+UPDATE produtos 
+SET preco = preco * 1.10   -- aumenta 10% no preço
+WHERE categoria = 'racao';
+
+
