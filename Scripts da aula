@@ -1,0 +1,36 @@
+select  nome as nome_pet 
+from pets
+- - - - - - - - - - - - - 
+select id as cod_pet,
+  nome as nome_pet
+from pets
+where nome like ‘%Bob%’
+- - - - - - - - - - - - - 
+select count(*) from servicos - - 10
+- - - - - - - - - - - - - -
+- - Tarefa: buscar na tabela CLIENTES quem possui o sobrenome/nome Silva e todos os produtos que tenham o preço maior 
+que 50 e quantidade estoque maior que 5 - tabela clientes. 
+resolução:
+
+SELECT * FROM produtos 
+WHERE preco > 50
+  AND quantidade_estoque > 5
+- - - - - - - - - - - - - - - 
+- - JOINS:
+FROM clientes clie
+INNER JOIN pets 
+ON pets.clintes_id = cli.id;
+- - - - - - - - - - - - - - - - 
+SELECT
+  agen.data_agendamento,
+  agen.status,
+  pets.nome     AS pet,
+  serv.nome     AS servico,
+  serv.preco
+
+FROM agen.data_agendamento as agen
+  INNER JOIN pets
+  ON agen.pet_id = pets.id
+INNER JOIN servicos as serv
+  ON agen.servico_id = serv.id;
+
