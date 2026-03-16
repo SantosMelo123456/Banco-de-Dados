@@ -18,3 +18,9 @@ WHERE especie IN ('cachorro', 'gato', 'peixe')
 -- Valor nulo
 WHERE email IS NULL
 WHERE email IS NOT NULL
+
+-- Usando o WHERE
+SELECT * FROM pets 
+WHERE especie = 'cachorro' 
+   OR especie = 'gato';
+
