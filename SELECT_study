@@ -76,6 +76,7 @@ WHERE preco > 50
 SELECT * FROM produtos 
 ORDER BY preco DESC;
 
+-- Ordenar, porém sendo ASC - ascendente, de a - z
 SELECT * FROM clientes 
 ORDER BY nome ASC;
 
@@ -89,24 +90,41 @@ FROM produtos
 ORDER BY preco DESC 
 LIMIT 3;
 
--- Valores únicos
+-- Valores únicos, sendo DISTINCT - elimina as linhas repetidas, traz cada valor só uma vez.
 SELECT 
 	DISTINCT especie 
 FROM pets;
 
--- Contar valores únicos
+-- Contar valores únicos. Sendo que é redundante, pois selecionar especia com distincnt de pets e um group by especia - dá na mesma, repetido. 
 SELECT especie,
 	COUNT(DISTINCT especie) as contagem
 FROM pets
 group by especie;
 
+
+-- Mais simples e idiomático 
+SELECT especie,
+    COUNT(*) AS contagem  -- conta quantas linhas tem em cada grupo
+FROM pets
+GROUP BY especie;
+
+
+-- Quantos donos diferentes tem cada espécie?
+SELECT especie,
+    COUNT(DISTINCT cliente_id) AS donos_unicos
+FROM pets
+GROUP BY especie;
+
+
 -- IN - lista de valores
 SELECT * FROM pets 
 WHERE id IN (25,27,15,30);
 
+
 -- BETWEEN - intervalo
 SELECT * FROM produtos 
 WHERE preco BETWEEN 50 AND 150;
+
 
 SELECT * FROM agendamentos 
 WHERE data_agendamento 
@@ -114,19 +132,7 @@ BETWEEN '2026-01-01' AND '2026-01-31';
 
 
 
--- JOINS
--- Pets com seus donos
-SELECT 
-    pets.id          as id_do_pet,
-	pets.nome        AS pet,
-    pets.especie,
-    pets.cliente_id   as id_tabela_cliente,
-    clientes.id       as id_cliente,
-    clientes.nome     AS dono,
-    clientes.telefone
-FROM clientes 
-left JOIN pets
-	ON pets.cliente_id = clientes.id;
+
 
 
 
