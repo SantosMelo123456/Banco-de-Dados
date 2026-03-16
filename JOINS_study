@@ -56,3 +56,18 @@ FROM clientes - da tabela clientes
 LEFT JOIN pedidos - faça uma junção à esquerda (clientes) com a tabela pedidos (pegue todos os registros de clientes e veja se eles têm Pedidos correspondentes)
 ON clientes.id = pedidos.clientes_id; - onde o id do cliente é igual ao clientes_id da tabela pedidos
 
+
+-- JOINS
+
+-- Pets com seus donos
+SELECT 
+    pets.id           as id_do_pet,
+	  pets.nome         AS pet,
+    pets.especie,
+    pets.cliente_id   as id_tabela_cliente,
+    clientes.id       as id_cliente,
+    clientes.nome     AS dono,
+    clientes.telefone
+FROM clientes 
+left JOIN pets
+	ON pets.cliente_id = clientes.id; -- onde o dono do pet bate com o do cliente id
