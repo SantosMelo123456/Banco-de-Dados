@@ -27,7 +27,67 @@ where preco > (select AVG (preco) from produtos)
 INNER join preco on preco.produto_id = produto.id
 
 
+-- Criar uma querry que soma de cada venda de cada cliente
+SELECT
+    clientes.nome AS cliente_nome,
+    SUM(vendas.valor_total) AS total
+FROM clientes
+INNER JOIN vendas ON vendas.cliente_id = clientes.id
+GROUP BY clientes.id, clientes.nome;
 
+
+-- Criar uma querry que exibe o nome dos pets de seus respectivos donos
+SELECT
+    clientes.nome AS cliente_nome,
+    pets.nome AS pet_nome
+FROM pets
+INNER JOIN clientes ON pets.cliente_id = clientes.id;
+
+
+-- Criar uma querry que exibe os nomes de produtos onde seus preços são acima da media de preços de produtos
+SELECT
+    produtos.nome AS produto,
+    preco
+FROM produtos
+WHERE preco > (SELECT AVG(preco) FROM produtos);
+
+
+-- Criar uma querry onde lista os itens de venda com os nomes dos produtos e quantidade 
+SELECT
+    produtos.nome AS produto,
+    itens_venda.quantidade AS quantidade_venda
+FROM itens_venda
+INNER JOIN produtos ON itens_venda.produto_id = produtos.id;
+
+
+-- Criar uma querry que relaciona o total da soma da quantidade de cada venda de cada item de venda e seu id e valor total
+SELECT
+    vendas.id AS venda,
+    SUM(itens_venda.quantidade * itens_venda.preco_unitario) AS total
+FROM vendas
+INNER JOIN itens_venda ON itens_venda.venda_id = vendas.id
+GROUP BY vendas.id;
+
+
+-- Criar uma querry que relaciona todos os clientes que não têm agendamento. Usa-se o LEFT JOIN!
+SELECT
+    clientes.nome AS cliente
+FROM clientes
+LEFT JOIN agendamentos ON agendamentos.cliente_id = clientes.id
+WHERE agendamentos.id IS NULL;
+
+
+-- Criar querry onde há soma da quantidade item venda relacionado com cada produto vendido.
+SELECT
+    produtos.nome AS produto,
+    SUM(itens_venda.quantidade) AS produtos_vendidos
+FROM itens_venda
+INNER JOIN produtos ON itens_venda.produto_id = produtos.id
+GROUP BY produtos.nome
+ORDER BY produtos_vendidos DESC
+LIMIT 5;
+
+-- JOIN sempre é feito pelo id, nunca pelo nome! E pra pegar os 5 mais vendidos precisa de SUM + GROUP BY + ORDER BY + LIMIT.
 
 
 
