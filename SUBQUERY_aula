@@ -1,0 +1,37 @@
+SELECT
+  emp_id,
+  emp_nome,
+  emp_salario
+FROM funcionarios s
+WHERE emp_salario >
+
+  (
+  SELECT AVG(emp_salario)
+  FROM funcionarios
+  WHERE dept_id = f.dept_id
+  );
+
+--
+
+SELECT 
+  nome, 
+  preco,
+  descricao
+FROM produtos
+WHERE preco >
+(SELECT AVG (preco))
+  FROM produtos)
+
+--
+
+SELECT
+  nome,
+  preco,
+  descricao
+()
+FROM produtos
+WHERE preco >
+(SELECT AVG (preco))
+  FROM produtos)
+
+
