@@ -28,10 +28,15 @@ SELECT
   nome,
   preco,
   descricao
-()
 FROM produtos
-WHERE preco >
+WHERE preco > (select AVG (preco) from produtos)
+INNER JOIN preco on preco.produto_id = produto.id
 (SELECT AVG (preco))
-  FROM produtos)
+FROM produtos)
+
+--
+
+SELECT
+
 
 
