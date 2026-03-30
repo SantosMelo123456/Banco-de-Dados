@@ -1,0 +1,11 @@
+-- criando uma view:
+
+create materialized view vwm_clientes_pets as 
+  with clientes_com_pets as (
+    -- cte 1: clientes que tem pets
+SELECT
+  c.id as cod_clt_pets,
+  c.nome,
+  c.telefone,
+  
+  )
