@@ -1,0 +1,75 @@
+-- 1. 
+SELECT DISTINCT c.nome
+FROM clientes c
+WHERE c.id IN (
+    SELECT v.cliente_id
+    FROM vendas v
+    WHERE v.id IN (
+        SELECT iv.venda_id
+        FROM itens_venda iv
+        WHERE iv.produto_id IN (
+            SELECT p.id
+            FROM produtos p
+            WHERE p.descricao ILIKE '%ração%'
+        )
+    )
+);
+
+
+-- 2.
+WITH media_por_cliente AS (
+    SELECT cliente_id, AVG(valor_total) AS media_compra
+    FROM vendas
+    GROUP BY cliente_id
+)
+SELECT c.nome, m.media_compra
+FROM clientes c
+JOIN media_por_cliente m ON c.id = m.cliente_id
+WHERE m.media_compra > 200;
+
+-- 3. 
+SELECT p.nome, sub.total_vendido
+FROM produtos p
+JOIN (
+    SELECT produto_id, SUM(quantidade) AS total_vendido
+    FROM itens_venda
+    GROUP BY produto_id
+) AS sub ON p.id = sub.produto_id
+WHERE sub.total_vendido > 2;
+
+
+-- 4.
+WITH agendamentos_por_servico AS (
+    SELECT servico_id, COUNT(*) AS total_agendamentos
+    FROM agendamentos
+    GROUP BY servico_id
+)
+SELECT s.nome, a.total_agendamentos
+FROM servicos s
+JOIN agendamentos_por_servico a ON s.id = a.servico_id
+ORDER BY a.total_agendamentos DESC
+LIMIT 3;
+
+
+--5.
+WITH total_por_cliente AS (
+    SELECT cliente_id, SUM(valor_total) AS total_gasto
+    FROM vendas
+    GROUP BY cliente_id
+),
+media_geral AS (
+    SELECT AVG(total_gasto) AS media
+    FROM total_por_cliente
+),
+pets_por_cliente AS (
+    SELECT cliente_id, COUNT(*) AS qtd_pets
+    FROM pets
+    GROUP BY cliente_id
+)
+SELECT c.nome, t.total_gasto, m.media
+FROM clientes c
+JOIN total_por_cliente t ON c.id = t.cliente_id
+JOIN pets_por_cliente p ON c.id = p.cliente_id
+CROSS JOIN media_geral m
+WHERE t.total_gasto > m.media
+  AND p.qtd_pets > 1;
