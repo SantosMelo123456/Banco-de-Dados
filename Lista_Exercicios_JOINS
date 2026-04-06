@@ -1,0 +1,49 @@
+-- 1. Pets com nome e telefone do dono
+SELECT 
+    pets.nome AS pet,
+    pets.especie,
+    pets.raca,
+    clientes.nome AS dono,
+    clientes.telefone
+FROM pets
+INNER JOIN clientes ON pets.cliente_id = clientes.id;
+
+
+-- 2. Relatório completo de vendas
+SELECT
+    clientes.nome AS cliente,
+    vendas.data_venda,
+    produtos.nome AS produto,
+    itens_venda.quantidade,
+    itens_venda.preco_unitario,
+    (itens_venda.quantidade * itens_venda.preco_unitario) AS subtotal
+FROM vendas
+INNER JOIN clientes ON vendas.cliente_id = clientes.id
+INNER JOIN itens_venda ON vendas.id = itens_venda.venda_id
+INNER JOIN produtos ON itens_venda.produto_id = produtos.id
+ORDER BY vendas.data_venda DESC;
+
+
+
+-- 3. Todos os clientes e quantas compras fizeram
+SELECT
+    clientes.nome,
+    COALESCE(COUNT(vendas.id), 0) AS total_compras
+FROM clientes
+LEFT JOIN vendas ON clientes.id = vendas.cliente_id
+GROUP BY clientes.id, clientes.nome
+ORDER BY total_compras DESC;
+
+
+-- 4. Todos os produtos e quantas unidades vendidas
+SELECT
+    produtos.nome,
+    COALESCE(SUM(itens_venda.quantidade), 0) AS total_vendido
+FROM produtos
+LEFT JOIN itens_venda ON produtos.id = itens_venda.produto_id
+GROUP BY produtos.id, produtos.nome
+ORDER BY total_vendido DESC;
+
+
+
+
