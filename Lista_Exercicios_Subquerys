@@ -27,7 +27,8 @@ FROM clientes c
 JOIN media_por_cliente m ON c.id = m.cliente_id
 WHERE m.media_compra > 200;
 
--- 3. 
+-- 3. Exemplo de Subquery no Banco: Crie uma subconsulta para obter a quantidade total vendida de cada produto e, em seguida, liste os produtos que tiveram mais de 2 unidades vendidas.
+
 SELECT p.nome, sub.total_vendido
 FROM produtos p
 JOIN (
