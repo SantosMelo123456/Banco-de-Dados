@@ -1,0 +1,69 @@
+O que uma trigger faz?
+são operações que são realizadas apenas em momentos específicos, como um INSERT, UPDATE ou DELETE.
+Ou seja, explorar completamente os recursos que o banco de dados/recursos/informações que ele oferen[ce.
+https://www.devmedia.com.br/triggers-no-sql-server-teoria-e-pratica-aplicada-em-uma-situacao-real/28194 
+
+Segundo o site DevMedia, o termo trigger (gatilho em inglês) define uma estrutura do banco de dados que funciona, como o nome sugere, 
+como uma função que é disparada mediante alguma ação. Geralmente essas ações que disparam os triggers são alterações nas tabelas por 
+meio de operações de inserção, exclusão e atualização de dados (insert, delete e update). Como essas operações estão sendo direcinadas
+a uma tabela sobre ela, é possível dispará-lo (trigger) para executar alguma tarefa.
+
+A sintaxe para criação de um trigger é a seguinte:
+
+CREATE TRIGGER [NOME_DO_TRIGGER]
+ON [NOME _DA_TABELA]
+[FOR/AFTER/INSTEAD OF] [INSERT/UPDATE/DELETE]
+AS
+    --CORPO DO TRIGGER
+
+explicação do código acima:
+NOME DO TRIGGER: nome que identificará o gatilho como objeto do banco de dados. Deve seguir as regras básicas de nomenclatura de objetos.
+NOME DA TABELA: tabela à qual o gatilho estará ligado, para ser disparado mediante ações de insert, update ou delete.
+FOR/AFTER/INSTEAD OF: uma dessas opções deve ser escolhida para definir o momento em que o trigger será disparado. FOR é o valor padrão e 
+faz com o que o gatilho seja disparado junto da ação. AFTER faz com que o disparo se dê somente após a ação que o gerou ser concluída. 
+INSTEAD OF faz com que o trigger seja executado no lugar da ação que o gerou.
+INSERT/UPDATE/DELETE: uma ou várias dessas opções (separadas por vírgula) devem ser indicadas para informar ao banco qual é a ação que 
+disparará o gatilho. Por exemplo, se o trigger deve ser disparado após toda inserção, deve-se utilizar AFTER INSERT.
+
+- - uso de linguagem procedural - - 
+       - - - triggers - - - 
+
+exemplos de triggers aula com professor 16.04.2026:
+_______________________________________________________
+
+_______________________________________________________
+
+função:
+
+select from pets
+select * from vw_clientes_pets
+
+create or replace function ataliza_data_hora()
+returns trigger as $$
+begin
+  new.atualizado_em := now();
+  return new;
+
+_________________________________________________________ OS DOIS CAMINHAM JUNTOS NO CÓDIGO
+
+aqui é realmente a própria trigger:
+
+create or replace trigger trg_atualiza_clientes
+before update on clientes
+for each row
+execute function atualiza_data_hora();
+end;
+$$ languege plpgsql;
+
+
+select * cliente -- só para aparecer a lista completa
+
+update clientes
+set nome = 'linda maria'
+where id = '8'              -- ele atualiza o id 8 para meu nome. Ele troca.
+
+select * from clientes -- aí aparece o resultado da mudança atualizado
+
+
+
+-- atividade para casa: fazer rodar essas triggers no meu Dbeaver
