@@ -1,0 +1,56 @@
+CREATE OR REPLACE FUNCTION atualiza_data_hora()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.atualizado_em:= now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_atualiza_clientes
+BEFORE UPDATE ON clientes
+FOR EACH ROW
+EXECUTE FUNCTION atualiza_data_hora();
+
+UPDATE clientes
+SET nome = 'Wudson Franco'
+WHERE id = 8
+
+-- 
+CREATE OR REPLACE FUNCTION registra_delete_produtos()
+RETURNS TRIGGER AS $$
+BEGIN
+  RAISE NOTICE 'Produto deletado: ID=%, Nome=%', OLD.id
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_delete_produtos
+BEFORE DELETE ON produtos
+FOOR EACH RIW
+EXECUTE FUNCTION registrar_delete_produtos()
+
+SELECT * FROM Produtos p
+
+DELETE FROM produtos
+WHERE id = 1;
+
+
+- - -  
+CREATE TABLE IF NOT EXISTS log_produtos_deletados (
+  id SERIAL PRIMARY KEY,
+  produto_id INTEGER,
+  nome VARCHAR,
+  preco NUMERIC,
+  deletado_em TIMESTAMP DEFAULT now()
+);
+
+CREATE OR REPLACE FUNCTION registra_delete_produtos()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INT log_produtos_deletador(produto_id, nome, preco, deletado_em)
+  VALUES (OLD.id, OLD.nomem OLD.preco, now());
+
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
