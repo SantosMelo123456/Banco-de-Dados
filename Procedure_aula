@@ -22,6 +22,10 @@ RAISE NOTICE 'Agendamento ID=% cancelado com sucesso!'
 END;
 $$;
 
--- Cancelar  
+
+-- Cancelar  um agendamento
 CALL cancelar_agendamento(1);
-- - 
+
+SELECT id, status, atualizado_em
+FROM agendamentos
+WHERE id=3;
