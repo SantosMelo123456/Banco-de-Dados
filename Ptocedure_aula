@@ -1,0 +1,27 @@
+-- procedure para cancelar pedido
+CREATE OR REPLACE PROCEDURE cancelar_agedamento(p_id INTEGER)
+LANGUANGE plpgsql
+AS $$
+BEGIN
+  -- verificar se o agendamento existe
+  IF NOT EXISTS (SELECT 1 from agendamentos where id= p_id)
+  RAISE EXCEPITION 'Agendamento ID=%   não encontrado"'
+END IF;
+
+-- Verificar se já está cancelado
+  IF EXISTS (SELECT 1 from agendamentos where id = p_id)
+RAISE EXCEPTION 'Agendamento ID=% já está cancelado!'
+END IF;
+
+-- Atualizar o status para cancelado
+UPDATE agendamentos
+SET status = 'cancelado'
+WHERE id=p_id;
+
+RAISE NOTICE 'Agendamento ID=% cancelado com sucesso!'
+END;
+$$;
+
+-- Cancelar  
+CALL cancelar_agendamento(1);
+- - 
