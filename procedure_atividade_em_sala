@@ -1,0 +1,63 @@
+-- Crie uma procedure que cancela o agendamento.
+  -- já foi dado em aula:
+  
+  CREATE OR REPLACE PROCEDURE cancelar_agedamento(p_id INTEGER)
+LANGUANGE plpgsql
+AS $$
+BEGIN
+  -- verificar se o agendamento existe
+  IF NOT EXISTS (SELECT 1 from agendamentos where id= p_id)
+  RAISE EXCEPITION 'Agendamento ID=%   não encontrado"'
+END IF;
+
+-- Verificar se já está cancelado
+  IF EXISTS (SELECT 1 from agendamentos where id = p_id)
+RAISE EXCEPTION 'Agendamento ID=% já está cancelado!'
+END IF;
+
+-- Atualizar o status para cancelado
+UPDATE agendamentos
+SET status = 'cancelado'
+WHERE id=p_id;
+
+RAISE NOTICE 'Agendamento ID=% cancelado com sucesso!'
+END;
+$$;
+
+
+-- Cancelar  um agendamento
+CALL cancelar_agendamento(1);
+
+SELECT id, status, atualizado_em
+FROM agendamentos
+WHERE id=3;
+
+
+-- Crie uma procedure que transfira o pet para outro dono.
+  -- novo:
+
+  CREATE OR REPLACE PROCEDURE trasferir_pet(p_id INTEGER, p_cliente_id INTEGER) 
+LANGUAGE plpgsql
+AS $$
+BEGIN
+
+ -- verificar se o pet existe
+  IF NOT EXISTS (SELECT 1 from pet where id= p_id) THEN
+  RAISE EXCEPTION 'Pet ID=% não encontrado', p_id;
+END IF;
+
+ -- verificar se o cliente existe
+ IF NOT EXISTS (SELECT 1 from cliente where id= cliente_id) THEN
+  RAISE EXCEPTION 'Cliente ID=% não encontrado', cliente_id;
+END IF;
+
+-- Atualizar o status para trocado
+UPDATE pet
+SET c_id = cliente_id
+WHERE id=p_id;
+
+RAISE NOTICE 'Pet ID=% transferido com sucesso!', p_id, cliente_id;
+
+END;
+$$;
+
