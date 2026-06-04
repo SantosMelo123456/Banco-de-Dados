@@ -1,0 +1,115 @@
+-- LISTA EXERCÍCIO Procedure 
+
+-- Questão 1
+
+-- procedure para aplicar desconto
+CREATE OR REPLACE PROCEDURE aplicar_desconto(p_id INTEGER, p_desconto NUMERIC)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_preco_atual NUMERIC(10, 2);
+    v_preco_novo  NUMERIC(10, 2);
+BEGIN
+  -- verificar se o produto existe
+  IF NOT EXISTS (SELECT 1 from produto where id= p_id) THEN
+  RAISE EXCEPTiON 'Produto ID=%   não encontrado', p_id;
+END IF;
+
+-- verificar se o percentual está entre 1 e 100
+ if p_desconto < 1 OR p_desconto > 100 THEN
+        RAISE EXCEPTION 'Percentual de desconto inválido: %. Deve ser entre 1 e 100.', p_desconto;
+    END IF;
+
+-- Buscar o preço atual
+    SELECT preco INTO v_preco_atual FROM produto WHERE id = p_id;
+
+    -- Calcular o novo preço
+    v_preco_novo := v_preco_atual * (1 - p_desconto / 100);
+
+    -- Verificar se o preço final é maior que R$ 1,00
+    IF v_preco_novo < 1 THEN
+        RAISE EXCEPTION 'Desconto inválido: o preço final (R$ %) ficaria abaixo de R$ 1,00.', v_preco_novo;
+    END IF;
+    
+    -- Aplicar o desconto
+    UPDATE produto
+    SET preco = v_preco_novo
+    WHERE id = p_id;
+
+    RAISE NOTICE 'Desconto de % aplicado! Preço anterior: R$ % → Novo preço: R$ %',
+        p_desconto, v_preco_atual, v_preco_novo;
+END;
+$$;
+
+
+-- Questão 2
+
+CREATE OR REPLACE PROCEDURE cadastrar_agendamento(p_pet_id INTEGER, p_servico_id numeric,p_data_agendamento DATE)
+LANGUAGE plpgsql
+AS $$
+begin
+    -- Verificar se o pet existe
+    IF NOT EXISTS (SELECT 1 FROM pet WHERE id = p_pet_id) THEN
+        RAISE EXCEPTION 'Pet ID=% não encontrado.', p_pet_id;
+    END IF;
+
+    -- Verificar se o serviço existe
+    IF NOT EXISTS (SELECT 1 FROM servico WHERE id = p_servico_id) THEN
+        RAISE EXCEPTION 'Serviço ID=% não encontrado.', p_servico_id;
+    END IF;
+
+    -- Verificar se a data não é anterior à data atual
+    IF p_data_agendamento < CURRENT_DATE THEN
+        RAISE EXCEPTION 'Data inválida: % é anterior à data atual (%).', p_data_agendamento, CURRENT_DATE;
+    END IF;
+
+    -- Inserir o agendamento
+    INSERT INTO agendamentos (pet_id, servico_id, data_agendamento)
+    VALUES (p_pet_id, p_servico_id, p_data_agendamento);
+
+    RAISE NOTICE 'Agendamento cadastrado com sucesso! Pet ID=%, Serviço ID=%, Data=%',
+        p_pet_id, p_servico_id, p_data_agendamento;
+END;
+$$;
+end
+
+
+-- Questão 3
+
+-- Procedure para transferir pet
+CREATE OR REPLACE PROCEDURE transferir_pet(
+    p_pet_id         INTEGER,
+    p_cliente_novo_id INTEGER
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_cliente_atual_id INTEGER;
+BEGIN
+    -- Verificar se o pet existe
+    IF NOT EXISTS (SELECT 1 FROM pets WHERE id = p_pet_id) THEN
+        RAISE EXCEPTION 'Pet ID=% não encontrado.', p_pet_id;
+    END IF;
+
+    -- Verificar se o novo cliente existe
+    IF NOT EXISTS (SELECT 1 FROM clientes WHERE id = p_cliente_novo_id) THEN
+        RAISE EXCEPTION 'Cliente ID=% não encontrado.', p_cliente_novo_id;
+    END IF;
+
+    -- Buscar o dono atual do pet
+    SELECT cliente_id INTO v_cliente_atual_id FROM pets WHERE id = p_pet_id;
+
+    -- Verificar se o pet já pertence ao novo cliente
+    IF v_cliente_atual_id = p_cliente_novo_id THEN
+        RAISE EXCEPTION 'O pet ID=% já pertence ao cliente ID=%.', p_pet_id, p_cliente_novo_id;
+    END IF;
+
+    -- Transferir o pet
+    UPDATE pets
+    SET cliente_id = p_cliente_novo_id
+    WHERE id = p_pet_id;
+
+    RAISE NOTICE 'Pet ID=% transferido do cliente ID=% para o cliente ID=%.',
+        p_pet_id, v_cliente_atual_id, p_cliente_novo_id;
+END;
+$$;
