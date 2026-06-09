@@ -2,7 +2,7 @@
 
 -- Questão 1
 
--- procedure para aplicar desconto
+-- Procedure para aplicar desconto
 CREATE OR REPLACE PROCEDURE aplicar_desconto(p_id INTEGER, p_desconto NUMERIC)
 LANGUAGE plpgsql
 AS $$
@@ -10,28 +10,22 @@ DECLARE
     v_preco_atual NUMERIC(10, 2);
     v_preco_novo  NUMERIC(10, 2);
 BEGIN
-  -- verificar se o produto existe
   IF NOT EXISTS (SELECT 1 from produto where id= p_id) THEN
   RAISE EXCEPTiON 'Produto ID=%   não encontrado', p_id;
 END IF;
 
--- verificar se o percentual está entre 1 e 100
  if p_desconto < 1 OR p_desconto > 100 THEN
         RAISE EXCEPTION 'Percentual de desconto inválido: %. Deve ser entre 1 e 100.', p_desconto;
     END IF;
 
--- Buscar o preço atual
     SELECT preco INTO v_preco_atual FROM produto WHERE id = p_id;
 
-    -- Calcular o novo preço
     v_preco_novo := v_preco_atual * (1 - p_desconto / 100);
 
-    -- Verificar se o preço final é maior que R$ 1,00
     IF v_preco_novo < 1 THEN
         RAISE EXCEPTION 'Desconto inválido: o preço final (R$ %) ficaria abaixo de R$ 1,00.', v_preco_novo;
     END IF;
     
-    -- Aplicar o desconto
     UPDATE produto
     SET preco = v_preco_novo
     WHERE id = p_id;
@@ -41,6 +35,14 @@ END IF;
 END;
 $$;
 
+-- Essa PROCEDURE realiza a aplicação de desconto. Com regras de que é até 10 dígitos com 2 casas decimais.
+-- 1° regra: a procedure aplicar_desconto começa captando o id do produto válido/existente
+-- 2° regra: a partir daí, ela impõe uma regra de aplicação de desconto, sendo válido maior que 1 e menor que 100
+-- 3° regra: Aí, a chama-se a função, faz um select do preço atual onde o seu id é igual a id do produto
+-- 4° regra: Aí, se o valor do preço novo for menor que 1, não vai ser possível aplicar o desconto
+-- 5° regra: atualiza o valor do produto com o valor de seu preço novo - certificação de seu id com o mesmo id do produto - e  o desconto é aplicado
+-- 6° fim: desconto aplicado para produtos que entram na regra: demonstra valor do desconto, valor atual do produto e o valor do preço novo que foi atualizado
+
 
 -- Questão 2
 
@@ -48,22 +50,18 @@ CREATE OR REPLACE PROCEDURE cadastrar_agendamento(p_pet_id INTEGER, p_servico_id
 LANGUAGE plpgsql
 AS $$
 begin
-    -- Verificar se o pet existe
     IF NOT EXISTS (SELECT 1 FROM pet WHERE id = p_pet_id) THEN
         RAISE EXCEPTION 'Pet ID=% não encontrado.', p_pet_id;
     END IF;
 
-    -- Verificar se o serviço existe
     IF NOT EXISTS (SELECT 1 FROM servico WHERE id = p_servico_id) THEN
         RAISE EXCEPTION 'Serviço ID=% não encontrado.', p_servico_id;
     END IF;
 
-    -- Verificar se a data não é anterior à data atual
     IF p_data_agendamento < CURRENT_DATE THEN
         RAISE EXCEPTION 'Data inválida: % é anterior à data atual (%).', p_data_agendamento, CURRENT_DATE;
     END IF;
 
-    -- Inserir o agendamento
     INSERT INTO agendamentos (pet_id, servico_id, data_agendamento)
     VALUES (p_pet_id, p_servico_id, p_data_agendamento);
 
@@ -73,38 +71,39 @@ END;
 $$;
 end
 
+-- Essa PROCEDURE realiza o cadastro de um agendamento:
+-- 1° - ela recebe em seu parâmetro o Id do Pet, Id do serviço, data de agendamento - tudo da tabela PET 
+-- 2° - faz uma conditional statement to check if a specific pet is missing from the database, se não for encontrado ele joga um aviso e seu id
+-- 3° - Mesma condição aplicada para servicos - verificação de existência
+-- 4° - Se a data de agendamento Pet for menor que a data Atual ele joga um aviso
+-- 5° - Aí então, se a condição for aceita, insere em Agendamentos o: id pet, id servico e a data de agendamento
+-- 6° - Joga um aviso com esses 3 parâmentros inseridos, e por fim o cadastro aí é concluído:
+--  Cadastro agendamento = Id Pet, Id servico x, data do agendamento
+
 
 -- Questão 3
 
 -- Procedure para transferir pet
-CREATE OR REPLACE PROCEDURE transferir_pet(
-    p_pet_id         INTEGER,
-    p_cliente_novo_id INTEGER
-)
+CREATE OR REPLACE PROCEDURE transferir_pet( p_pet_id INTEGER, p_cliente_novo_id INTEGER)
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_cliente_atual_id INTEGER;
 BEGIN
-    -- Verificar se o pet existe
     IF NOT EXISTS (SELECT 1 FROM pets WHERE id = p_pet_id) THEN
         RAISE EXCEPTION 'Pet ID=% não encontrado.', p_pet_id;
     END IF;
 
-    -- Verificar se o novo cliente existe
     IF NOT EXISTS (SELECT 1 FROM clientes WHERE id = p_cliente_novo_id) THEN
         RAISE EXCEPTION 'Cliente ID=% não encontrado.', p_cliente_novo_id;
     END IF;
 
-    -- Buscar o dono atual do pet
     SELECT cliente_id INTO v_cliente_atual_id FROM pets WHERE id = p_pet_id;
 
-    -- Verificar se o pet já pertence ao novo cliente
     IF v_cliente_atual_id = p_cliente_novo_id THEN
         RAISE EXCEPTION 'O pet ID=% já pertence ao cliente ID=%.', p_pet_id, p_cliente_novo_id;
     END IF;
 
-    -- Transferir o pet
     UPDATE pets
     SET cliente_id = p_cliente_novo_id
     WHERE id = p_pet_id;
@@ -113,3 +112,15 @@ BEGIN
         p_pet_id, v_cliente_atual_id, p_cliente_novo_id;
 END;
 $$;
+
+-- Essa PROCEDURE realiza a transferencia de um Pet:
+-- 1°: declara o valor do ID DO cliente atual como inteiro
+-- 2°: aplica uma condição de que existência do id Pet - tabela PET
+-- 3°: aplica uma condição de existência id do novo cliente pet - tabela CLIENTE com FK em Pets
+-- 4°: Aí, seleciona id do cliente atual EM valor do id do cliente Atual da tabela Pets onde o id é igual ao id do Pet - confirmação
+-- 5°: Condição SE o valor do id do cliente atual for igualao do cliente novo pet, ele avisa que é há uma redudancia
+-- 6°: Se não for igual, ele dá um update - atualiza - dando um set no cliente id sendo igual ao id do novo cliente pet id 
+-- 7°: onde o id seja igual ao id do pet, claro
+-- 8°: Dessa forma, ele joga um aviso da certificação da transferência, rebendo como parâmetro o id Pet, Valor do cliente antigo - atual - e o Id do Novo Cliente
+
+
