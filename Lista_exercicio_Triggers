@@ -1,0 +1,106 @@
+-- LISTA EXERCÍCIO Triggers 
+
+-- Questão 1
+
+-- Trigger de Impedir cancelamento de Agendamento concluído anteriormente
+CREATE OR REPLACE FUNCTION impedir_cancelamento()
+RETURNS TRIGGER AS $$
+BEGIN
+IF OLD.status = 'Concluído' THEN
+  RAISE EXCEPTION 'Não é possível cancelar ou alterar um agendamento que já foi concluído: ID=% ', OLD.id;
+END IF;
+
+-- Mas se o status não for CONCLUÍDO, a operação segue: deleta/cancela e volta para old. Mas se for um uptade/atualização retorna New
+IF trg_op = 'DELETE' THEN
+        RETURN OLD;
+    ELSE
+        RETURN NEW;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_impedir_cancelamento_concluido
+BEFORE UPDATE or delete ON Agendamentos
+FOR EACH ROW
+EXECUTE FUNCTION impedir_cancelamento_concluido();
+
+SELECT * FROM Agendamentos Ag
+
+-- testar:
+DELETE FROM agendamentos WHERE id = 10;
+
+
+
+-- Questão 2
+
+-- Trigger de Registrar transferncia de Pet
+CREATE OR REPLACE FUNCTION log_registra_transferencia_pet()
+RETURNS TRIGGER AS $$
+BEGIN
+	IF OLD.cliente_id <> NEW.cliente_id THEN
+		INSERT INTO log_transferencias_pets (pet_id, cliente_anterior, cliente_novo, data_transferencia)
+		VALUES (OLD.id, OLD.cliente_id, NEW.cliente_id, NOW());
+end if;
+return new;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_log_registra_transferencia_pet;
+BEFORE update ON pets
+FOR EACH ROW
+EXECUTE FUNCTION registrar_transferencia_pet()
+
+-- Condição principal: se o id do cliente antigo for DIFERENTE do cliente novo aí é inseridoos valores pedidos no parametro
+
+
+
+
+
+-- Questão 3
+
+-- Trigger que faz uma tabela: log_produtos deletados. Que recebe e salva parâmetros quando sempre um produto é deletado
+
+create table if not exists log_produtos_deletados (
+	id serial primary key,
+	produto_id int,
+	nome varchar,
+	preco numeric
+);
+
+create or replace function log_produtos_deletados()
+returns trigger as $$
+begin
+	INSERT INTO log_produtos_deletados(produto_id, nome, preco)
+	values (old.id, old.nome, old.preco);
+	RAISE NOTICE 'Produto deletado: Id=%, Nome=%', OLD.id, OLD.nome;
+
+	return old;
+end;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER trg_delete_produtos
+BEFORE DELETE ON produtos
+FOR EACH ROW
+EXECUTE FUNCTION log_produtos_deletados_registrar()
+
+SELECT * FROM Produtos p
+
+DELETE FROM produtos
+WHERE id = 1;
+
+-- Lógica da construção dessa trigger:
+-- Pontos principais:
+-- 1° - Foi criado a tabela log_produtos_deletados como foi PEDIDO no enunciado da questão
+-- 2° - Nessa tabela foi inserida parâmetros pedidos: id tabela, id do produto, seu nome e preco
+-- 3° - Início da criação da trigger: 
+-- 4° - Criar a função log_produtos_deletados que retorna e recebe os parametros e valores e retorna uma noticia 
+-- 5° - Termina retornando old
+-- 6° - A trigger trg_deletado_produtos:
+-- 7° - Antes dedeletar na tabela Produtos, para cada linha é preciso executar a função
+
+
+
+
